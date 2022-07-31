@@ -1,11 +1,18 @@
 const userController = {};
 const User = require("../models/User");
 const { sendResponse, AppError } = require("../helpers/utils");
+const { body, validationResult } = require("express-validator");
 
 userController.createUser = async (req, res, next) => {
   const data = req.body;
+  if (!data) throw new AppError(406, "Path is required", "Bad request");
   try {
-    if (!data) throw new AppError(400, "Field is invalid", "Bad request");
+    // check field name must be a string
+    body("name").isString();
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      throw new AppError(400, "Path name must be string", "Bad request");
+    }
 
     const created = await User.create(data);
     sendResponse(
@@ -22,9 +29,14 @@ userController.createUser = async (req, res, next) => {
 };
 
 userController.getAllUser = async (req, res, next) => {
-  const filter = {};
+  const { name } = req.query;
+  if (name) {
+    filter = { name: name };
+  } else {
+    filter = {};
+  }
   try {
-    const listOfUser = await User.find(filter);
+    const listOfUser = await User.find(filter).populate("myTask");
 
     sendResponse(
       res,
@@ -39,6 +51,25 @@ userController.getAllUser = async (req, res, next) => {
   }
 };
 
-userController.getUserById = async (req, res, next) => {};
+userController.getTaskById = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const found = await User.findOne({ _id: `${id}` }).populate("myTask");
+
+    const task = found.myTask;
+
+    sendResponse(
+      res,
+      200,
+      true,
+      { data: task },
+      null,
+      "Get users successfully"
+    );
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = userController;

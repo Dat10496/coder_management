@@ -7,6 +7,9 @@ router.get("/", function (req, res, next) {
 });
 
 const userRouter = require("./user.api.js");
-router.use("/user", userRouter);
+router.use("/users", userRouter);
+
+const taskRouter = require("./task.api");
+router.use("/tasks", taskRouter);
 
 module.exports = router;

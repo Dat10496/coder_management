@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    age: { type: Number },
+    role: { type: String, default: "employee", enum: ["manager", "employee"] },
+    myTask: { type: mongoose.SchemaTypes.Array, ref: "Task" },
   },
   { timestamps: true }
 );

@@ -2,29 +2,29 @@ const express = require("express");
 const {
   getAllUser,
   createUser,
-  getUserById,
+  getTaskById,
 } = require("../controllers/user.controllers");
 const router = express.Router();
 
 /**
- * @route GET api/user
- * @description get list of user
- * @access public
+ * @route GET API/users
+ * @description Get a list of users
+ * @access private
  */
 router.get("/", getAllUser);
 
 /**
- * @route CREATE api/
- * @description get list of boos
- * @access public
+ * @route POST api/users
+ * @description Create new user
+ * @access private, assigner
  */
 router.post("/", createUser);
 
 /**
- * @route GET api/:id
- * @description get list of boos
+ * @route GET api/users/:id
+ * @description Get user by id
  * @access public
  */
-router.get("/:id", getUserById);
+router.get("/:id", getTaskById);
 
 module.exports = router;
