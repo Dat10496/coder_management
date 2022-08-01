@@ -22,7 +22,7 @@ router.post("/", createUser);
 
 /**
  * @route GET api/users/:id
- * @description Get user by id
+ * @description Get all task of user by user's _id
  * @access public
  */
 router.get("/:id", getTaskById);

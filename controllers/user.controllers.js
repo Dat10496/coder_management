@@ -59,14 +59,7 @@ userController.getTaskById = async (req, res, next) => {
 
     const task = found.myTask;
 
-    sendResponse(
-      res,
-      200,
-      true,
-      { data: task },
-      null,
-      "Get users successfully"
-    );
+    sendResponse(res, 200, true, { task: task }, null, "Get task successfully");
   } catch (error) {
     next(error);
   }

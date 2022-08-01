@@ -25,21 +25,21 @@ router.get("/", getAllTask);
 
 /**
  * @route PUT api/tasks/:id
- * @description update task
+ * @description update status or assignee to assign or unassign task to employee
  * @access private, assigner
  */
 router.put("/:id", updateTask);
 
 /**
  * @route GET api/tasks/:id
- * @description update task
+ * @description get detail description of this task by task's id
  * @access private, assigner
  */
 router.get("/:id", getDetailDescription);
 
 /**
  * @route DELETE api/tasks/:id
- * @description delete task
+ * @description delete task when done
  * @access private, assigner
  */
 router.delete("/:id", deleteTask);

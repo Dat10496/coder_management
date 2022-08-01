@@ -9,7 +9,8 @@ require("dotenv").config();
 const cors = require("cors");
 const { AppError, sendResponse } = require("./helpers/utils");
 const mongoose = require("mongoose");
-const mongoUri = process.env.MONGO_URI;
+const mongoUri =
+  "mongodb+srv://admin:admin123@cluster0.teyl3.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose
   .connect(mongoUri)

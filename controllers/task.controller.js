@@ -57,6 +57,8 @@ taskController.getAllTask = async (req, res, next) => {
 };
 
 taskController.updateTask = async (req, res, next) => {
+  const allowStatus = "archive";
+
   const { assignee, status } = req.body;
   const { id } = req.params;
   const updateInfo = { assignee, status };
@@ -66,6 +68,16 @@ taskController.updateTask = async (req, res, next) => {
   if (!id) throw new AppError(402, "Cannot access task", "Bad request");
 
   try {
+    const found = await Task.findOne({ _id: `${id}` });
+    console.log(Date(found.updatedAt) - Date(found.createdAt));
+    if (found.status === "done") {
+      if (status === allowStatus) {
+        return;
+      } else {
+        sendResponse(res, 406, false, null, true, "value not acceptable");
+      }
+    }
+
     const updated = await Task.findByIdAndUpdate(id, updateInfo, options);
     sendResponse(
       res,
@@ -93,7 +105,7 @@ taskController.getDetailDescription = async (req, res, next) => {
       res,
       200,
       true,
-      { data: description },
+      { description: description },
       null,
       "Get description successfully"
     );
