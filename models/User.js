@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     role: { type: String, default: "employee", enum: ["manager", "employee"] },
-    myTask: { type: mongoose.SchemaTypes.Array, ref: "Task" },
+    myTask: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Task" }],
   },
   { timestamps: true }
 );
