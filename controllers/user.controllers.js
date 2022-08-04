@@ -23,6 +23,9 @@ userController.createUser = async (req, res, next) => {
     if (checkValueOfName.length) {
       throw new AppError(406, "name is used already", "Bad request");
     }
+    if (!data.name) {
+      throw new AppError(406, "Name is required", "Bad request");
+    }
 
     const created = await User.create(data);
     sendResponse(

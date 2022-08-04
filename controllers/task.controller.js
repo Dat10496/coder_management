@@ -1,6 +1,6 @@
 const { sendResponse, AppError } = require("../helpers/utils");
 const Task = require("../models/Task");
-const { body, validationResult } = require("express-validator");
+const { check, body, validationResult } = require("express-validator");
 const User = require("../models/User");
 const isValidObjectId = require("./validateObjecId");
 
@@ -8,10 +8,11 @@ const taskController = {};
 
 taskController.createTask = async (req, res, next) => {
   const info = req.body;
+
   if (!info) throw new AppError(406, "Path is required", "Bad request");
 
   // check name of task must be string
-  body("name").isString();
+  check("name").isString();
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -25,7 +26,7 @@ taskController.createTask = async (req, res, next) => {
       sendResponse(res, 406, false, null, true, "Task is already");
       return;
     }
-    // check if
+    // check if contain description
     if (!info.description) {
       sendResponse(res, 406, false, null, true, "description is required");
       return;
@@ -89,41 +90,41 @@ taskController.updateTask = async (req, res, next) => {
   if (!updateInfo) throw new AppError(406, "Path is required", "Bad request");
   if (!id) throw new AppError(402, "Cannot access task", "Bad request");
 
-  // check name of task must be string
-  body("assignee").isArray();
+  // check assignee of task must be array
+  check("assignee").isArray();
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    throw new AppError("400", "Path assignee must be array", "Bad request");
+    throw new AppError(406, "Path assignee must be array", "Bad request");
   }
 
   try {
     // check if id is valid in UserModel & ObjectId
+    isValidObjectId(id);
+
     if (assignee) {
-      assignee.forEach((userId) => {
-        isValidObjectId(userId);
+      for (let i = 0; i < assignee.length; i++) {
+        isValidObjectId(assignee[i]);
 
-        const checkUser = async () => {
-          const user = await User.exists({ _id: userId });
-
-          if (!user) {
-            return sendResponse(res, 406, false, null, true, "user not found");
-          }
-        };
-        checkUser();
-      });
-      // return true;
+        const user = await User.exists({ _id: assignee[i] });
+        if (!user) {
+          throw new AppError(406, "Id is not exist", "Bad request");
+        }
+      }
     }
+
     // Find status of task
     const found = await Task.findOne({ _id: `${id}` });
 
     // Check requirement 10
-    if (found.status === "done") {
-      if (!allowStatus.includes(status)) {
-        throw new AppError(406, "Value is not acceptable", "Bad request");
+    if (status) {
+      if (found.status === "done") {
+        if (!allowStatus.includes(status)) {
+          throw new AppError(406, "Value is not acceptable", "Bad request");
+        }
+      } else if (found.status === "archive") {
+        throw new AppError(406, "Cannot change", "Bad request");
       }
-    } else if (found.status === "archive") {
-      throw new AppError(406, "Cannot change", "Bad request");
     }
 
     // Update status & assignee
