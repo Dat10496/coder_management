@@ -12,7 +12,7 @@ taskController.createTask = async (req, res, next) => {
   if (!info) throw new AppError(406, "Path is required", "Bad request");
 
   // check name of task must be string
-  check("name").isString();
+  body("name").isString().isExist();
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -87,9 +87,6 @@ taskController.updateTask = async (req, res, next) => {
   if (!updateInfo) throw new AppError(406, "Path is required", "Bad request");
   if (!id) throw new AppError(402, "Cannot access task", "Bad request");
 
-  if (!updateInfo) throw new AppError(406, "Path is required", "Bad request");
-  if (!id) throw new AppError(402, "Cannot access task", "Bad request");
-
   // check assignee of task must be array
   check("assignee").isArray();
   const errors = validationResult(req);
@@ -108,7 +105,7 @@ taskController.updateTask = async (req, res, next) => {
 
         const user = await User.exists({ _id: assignee[i] });
         if (!user) {
-          throw new AppError(406, "Id is not exist", "Bad request");
+          throw new AppError(406, "userId is not exist", "Bad request");
         }
       }
     }
